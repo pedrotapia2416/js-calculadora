@@ -1,19 +1,12 @@
 var calculadora = {
 
-visor: document.getElementById("display"),
-visualizador: "0",
-operacion: "",
-numN: 0,
-numNM: 0,
-numNMM: 0,
-resultado: 0,
-igual: false,
-
+//Inicializador para eventos y formato de botones.
 init: (function(){
+	this.formatoBotones(".tecla");
 	this.asignarBotones();
 }),
 
-
+// Asignar eventos a los botones
 asignarBotones: function(){
 	document.getElementById("1").addEventListener("click",n1);
 	document.getElementById("2").addEventListener("click",n2);
@@ -90,72 +83,60 @@ function punto() {
 	calculadora.punto()
 }
 function igual() {
-	calculadora.igualar()
+	calculadora.resolver()
 }
 },
+
 //ingreso de numeros
 numero: function(valor){
 	if (this.visualizador.length < 8) {
-
 		if (this.visualizador=="0") {
 			this.visualizador = "";
 			this.visualizador = this.visualizador + valor;
 		} else {
 			this.visualizador = this.visualizador + valor;
 		}
-	this.updateVisor();
+	this.visualizar();
 	}
 },
+
+visualizar: function(){
+	this.visor.innerHTML = this.visualizador;
+},
+
+//Valores Base
+visualizador: "0",
+operacion: "",
+numN: 0,
+numNM: 0,
+numNMM: 0,
+resultado: 0,
+igual: false,
 
 
 //Boton ON - Clear
 on: function(){
-	this.visualizador = "0";
+this.visualizador = "0";
 this.operacion = "";
 this.numN = 0;
 this.numNM = 0;
 this.resultado = 0;
-this.Operación = "";
 this.igual = false;
 this.numNMM = 0;
-this.updateVisor();
+this.visualizar();
 },
 
-//ingreso Operacion
 
+//ingreso Operacion
 operaciones: function(oper){
 	this.numN = parseFloat(this.visualizador);
 	this.visualizador = "";
 	this.operacion = oper;
 	this.igual = false;
-	this.updateVisor();
+	this.visualizar();
 },
 
-igualar: function(){
-
-	if(!this.igual){
-		this.numNM = parseFloat(this.visualizador);
-		this.numNMM = this.numNM;
-		this.realizarOperacion(this.numN, this.numNM, this.operacion);
-
-	} else {
-		this.realizarOperacion(this.numN, this.numNMM, this.operacion);
-	}
-
-	this.numN = this.resultado;
-	this.visualizador = "";
-
-	if (this.resultado.toString().length < 9){
-		this.visualizador = this.resultado.toString();
-	} else {
-		this.visualizador = this.resultado.toString().slice(0,8) + "e";
-	}
-
-	this.igual = true;
-	this.updateVisor();
-
-},
-
+//Realizar Operacion
 realizarOperacion: function(numN, numNM, operacion){
 	switch(operacion){
 		case "+":
@@ -169,17 +150,91 @@ realizarOperacion: function(numN, numNM, operacion){
 		break;
 		case "/":
 			this.resultado = eval(numN / numNM);
-		break;
-		case "raiz":
-			this.resultado = eval(Math.sqrt(numN));
+	}
+},
+
+resolver: function(){
+	if(!this.igual){
+		this.numNM = parseFloat(this.visualizador);
+		this.numNMM = this.numNM;
+		this.realizarOperacion(this.numN, this.numNM, this.operacion);
+	} else {
+		this.realizarOperacion(this.numN, this.numNMM, this.operacion);
+	}
+	this.numN = this.resultado;
+	this.visualizador = "";
+	if (this.resultado.toString().length < 9){
+		this.visualizador = this.resultado.toString();
+	} else {
+		this.visualizador = this.resultado.toString().slice(0,8) + "e";
+	}
+	this.igual = true;
+	this.visualizar();
+},
+
+// Cambiar Signo
+signo: function(){
+	if (this.visualizador !="0") {
+		var sig;
+		if (this.visualizador.charAt(0)=="-") {
+			sig = this.visualizador.slice(1);
+		}	else {
+			sig = "-" + this.visualizador;
+		}
+	this.visualizador = "";
+	this.visualizador = sig;
+	this.visualizar();
+	}
+},
+
+// Decimal
+punto: function(){
+	if (this.visualizador.indexOf(".")== -1) {
+		if (this.visualizador == ""){
+			this.visualizador = this.visualizador + "0.";
+		} else {
+			this.visualizador = this.visualizador + ".";
+		}
+		this.visualizar();
 	}
 },
 
 
-
-updateVisor: function(){
-	this.visor.innerHTML = this.visualizador;
+//Formato de botones
+formatoBotones: function(selector){
+	var x = document.querySelectorAll(selector);
+	for (var i = 0; i<x.length;i++) {
+		x[i].onmouseover = this.aprietaBoton;
+		x[i].onmouseleave = this.sueltoBoton;
+	};
 },
+
+aprietaBoton: function(event){
+	calculadora.botonChico(event.target);
+},
+
+sueltoBoton: function(event){
+	calculadora.botonNormal(event.target);
+},
+
+//Formato de botones
+
+botonChico: function(elemento){
+	var ch = elemento.class;
+	if (ch = "tecla" ) {
+		elemento.style.padding = "1px"
+	}
+},
+
+botonNormal: function(elemento){
+	var nm = elemento.class;
+	if (nm = "tecla" ) {
+		elemento.style.padding = "0px";
+	}
+},
+
+visor: document.getElementById("display"),
+
 
 
 };
